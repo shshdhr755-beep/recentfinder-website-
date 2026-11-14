@@ -1,103 +1,203 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#101116">
-<title>RecentFinder — Discover Instagram hashtags</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RecentFinder</title>
 <style>
-:root{--bg:#0d0e12;--panel:#15171e;--panel2:#1c1f29;--text:#f5f6fa;--muted:#9da3b4;--line:#292d39;--accent:#c5f36b;--accent2:#9fd13f}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 50% -15%,#292e20 0,transparent 42%),var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-.wrap{width:min(1040px,calc(100% - 32px));margin:auto}.top{display:flex;align-items:center;justify-content:space-between;padding:24px 0;border-bottom:1px solid var(--line)}
-.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;letter-spacing:-.5px}.logo{width:34px;height:34px;border-radius:11px;background:var(--accent);color:#151710;display:grid;place-items:center;font-weight:900}.pill{font-size:11px;color:var(--accent);border:1px solid #526333;border-radius:99px;padding:4px 9px}
-.hero{text-align:center;padding:64px 0 36px}.eyebrow{color:var(--accent);font-size:11px;letter-spacing:2px;font-weight:800}.hero h1{font-size:clamp(34px,6vw,58px);line-height:1.04;letter-spacing:-2px;margin:14px 0}.hero h1 span{color:var(--accent)}.hero p{color:var(--muted);max-width:570px;margin:0 auto 28px}
-.searchbox{display:flex;gap:10px;background:#fff;padding:7px;border-radius:16px;max-width:650px;margin:auto;box-shadow:0 18px 55px #0008}.hash{color:#6c7180;padding:12px 4px 12px 12px;font-weight:700}.searchbox input{min-width:0;flex:1;border:0;outline:0;color:#17191e;font-size:16px}.searchbox button{border:0;background:#151710;color:var(--accent);padding:0 20px;border-radius:11px;font-weight:800;cursor:pointer}.searchbox button:hover{background:#2b3420}
-.examples{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:17px}.tag{border:1px solid var(--line);background:#15171d;color:#c5c9d4;border-radius:99px;padding:6px 11px;font-size:12px;cursor:pointer}.tag:hover{border-color:var(--accent);color:var(--accent)}
-.sectionhead{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:32px 0 14px}.sectionhead h2{font-size:16px;margin:0}.muted{color:var(--muted);font-size:12px}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:20px}.notice{display:flex;gap:13px;align-items:flex-start}.noticeicon{width:34px;height:34px;flex:none;border-radius:11px;background:#28321b;color:var(--accent);display:grid;place-items:center;font-weight:900}.notice strong{display:block;margin-bottom:4px}.notice p{margin:0;color:var(--muted);font-size:13px}
-.results{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:14px}.tile{min-height:130px;border:1px solid var(--line);background:linear-gradient(145deg,#1b1e27,#13151b);border-radius:15px;padding:17px;display:flex;flex-direction:column;justify-content:space-between}.tile .symbol{font-size:22px;color:var(--accent)}.tile b{font-size:14px}.tile small{color:var(--muted)}
-.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}.action{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;border-radius:11px;padding:11px 15px;font-weight:750;font-size:13px}.primary{background:var(--accent);color:#151710}.secondary{border:1px solid var(--line);color:var(--text);background:#1b1e27}
-footer{border-top:1px solid var(--line);margin-top:52px;padding:22px 0 35px;color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap}
-#status{margin-top:12px;color:var(--muted);font-size:12px;min-height:18px}
-@media(max-width:680px){.hero{padding:48px 0 24px}.results{grid-template-columns:1fr}.searchbox{gap:2px}.searchbox button{padding:0 12px}.sectionhead{align-items:flex-start;flex-direction:column}.panel{padding:16px}}
+*{box-sizing:border-box}
+body{margin:0;background:#0d0e12;color:#f5f6fa;font-family:Arial,sans-serif}
+main{max-width:950px;margin:auto;padding:24px 16px}
+header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #292d39;padding:15px 0}
+.logo{font-size:22px;font-weight:bold;color:#c5f36b}
+button{border:0;border-radius:10px;padding:12px 17px;background:#c5f36b;color:#111;font-weight:bold;cursor:pointer}
+button:disabled{opacity:.5}
+.hero{text-align:center;padding:55px 0 25px}
+h1{font-size:clamp(36px,7vw,58px);margin:10px 0}
+h1 span{color:#c5f36b}
+p{color:#aeb3c0;line-height:1.6}
+.search{display:flex;gap:8px;background:white;padding:7px;border-radius:13px;max-width:620px;margin:25px auto}
+.search input{flex:1;min-width:0;border:0;outline:0;padding:10px;color:#111;font-size:16px}
+#status{text-align:center;color:#c5f36b;min-height:25px;margin:15px}
+#account{font-size:13px;color:#c5f36b}
+#results{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px;margin-top:20px}
+.post{background:#181a22;border:1px solid #292d39;border-radius:13px;overflow:hidden}
+.post img,.post video{width:100%;max-height:330px;object-fit:cover;background:#080808}
+.post .info{padding:13px}
+.post a{color:#c5f36b;text-decoration:none}
+.post small{color:#aeb3c0}
+#connect{background:#181a22;border:1px solid #292d39;border-radius:15px;padding:20px;text-align:center;margin:25px 0}
+footer{text-align:center;color:#858b99;padding:35px 0;font-size:12px}
+@media(max-width:500px){.search{gap:3px}.search button{padding:10px}}
 </style>
 </head>
 <body>
-<div class="wrap">
-<header class="top">
-  <div class="brand"><div class="logo">R</div>RecentFinder</div>
-  <span class="pill">BETA · FREE</span>
-</header>
 <main>
+<header>
+  <div class="logo">◎ RecentFinder</div>
+  <div id="account">Not connected</div>
+</header>
+
 <section class="hero">
-  <div class="eyebrow">FIND WHAT'S TRENDING</div>
-  <h1>Explore Instagram<br><span>hashtags.</span></h1>
-  <p>Search a hashtag and jump straight to its public Instagram results. A clean, fast starting point for discovering content.</p>
-  <form class="searchbox" id="searchForm">
-    <span class="hash">#</span>
-    <input id="hashtag" type="text" placeholder="try fashion, cars, travel..." autocomplete="off" aria-label="Hashtag">
-    <button type="submit">Search ↗</button>
-  </form>
-  <div class="examples" aria-label="Popular examples">
-    <button class="tag" data-tag="fashion">#fashion</button>
-    <button class="tag" data-tag="cars">#cars</button>
-    <button class="tag" data-tag="travel">#travel</button>
-    <button class="tag" data-tag="streetstyle">#streetstyle</button>
-    <button class="tag" data-tag="food">#food</button>
+  <p>INSTAGRAM HASHTAG DISCOVERY</p>
+  <h1>Find what's <span>trending.</span></h1>
+  <p>Connect your Instagram Creator or Business account and search hashtags.</p>
+  <div class="search">
+    <input id="tag" placeholder="Enter hashtag e.g. fashion">
+    <button id="searchBtn">Search</button>
   </div>
-  <div id="status" role="status"></div>
+  <div id="status">Connect your Instagram account to get started.</div>
+</section>
+
+<section id="connect">
+  <h2>Instagram connection</h2>
+  <p id="connectText">Connect your Instagram account to search public hashtag media.</p>
+  <button id="connectBtn">Connect Instagram</button>
+  <button id="logoutBtn" style="display:none;background:#333;color:white">Disconnect</button>
 </section>
 
 <section>
-  <div class="sectionhead"><h2 id="resultTitle">Your hashtag search</h2><span class="muted">Opens Instagram's public hashtag page</span></div>
-  <div class="panel">
-    <div class="notice">
-      <div class="noticeicon">i</div>
-      <div>
-        <strong>This first version does not fetch Instagram posts itself.</strong>
-        <p>Instagram restricts automated hashtag feeds. This free starter opens the official hashtag page instead of showing invented or outdated posts. A live feed can be added later if Meta grants the required API access.</p>
-      </div>
-    </div>
-    <div class="actions">
-      <a class="action primary" id="openInstagram" href="https://www.instagram.com/explore/tags/fashion/" target="_blank" rel="noopener noreferrer">Open #fashion on Instagram ↗</a>
-      <button class="action secondary" id="copyTag" type="button">Copy hashtag</button>
-    </div>
-  </div>
+  <h2 id="heading">Search results</h2>
+  <div id="results"></div>
 </section>
 
-<section>
-  <div class="sectionhead"><h2>How the live-feed upgrade works</h2><span class="muted">Phase 2</span></div>
-  <div class="results">
-    <div class="tile"><span class="symbol">01</span><b>Switch to Creator</b><small>Free account type change inside Instagram.</small></div>
-    <div class="tile"><span class="symbol">02</span><b>Meta developer setup</b><small>Create an app and request the required permissions.</small></div>
-    <div class="tile"><span class="symbol">03</span><b>Secure API connection</b><small>Keep tokens on a server, never in public website code.</small></div>
-  </div>
-</section>
+<footer>RecentFinder · Independent discovery tool · Not affiliated with Meta</footer>
 </main>
-<footer><span>RecentFinder · Independent discovery interface</span><span>Not affiliated with Instagram or Meta.</span></footer>
-</div>
+
 <script>
-const input=document.getElementById('hashtag');
-const link=document.getElementById('openInstagram');
-const title=document.getElementById('resultTitle');
-const status=document.getElementById('status');
-let current='fashion';
-function cleanTag(value){return value.trim().replace(/^#+/,'').replace(/\s+/g,'').replace(/[^a-zA-Z0-9._]/g,'').toLowerCase();}
-function setTag(value){
-  const tag=cleanTag(value);
-  if(!tag){status.textContent='Please enter a hashtag first.';input.focus();return;}
-  current=tag;input.value=tag;title.textContent='Results for #'+tag;
-  link.href='https://www.instagram.com/explore/tags/'+encodeURIComponent(tag)+'/';
-  link.textContent='Open #'+tag+' on Instagram ↗';
-  status.textContent='Ready: #'+tag;
+const API="https://recentfinder-api.shshdhr755.workers.dev";
+const $=id=>document.getElementById(id);
+let session=localStorage.getItem("rf_session")||"";
+
+function message(text){$("status").textContent=text;}
+
+function showAccount(name){
+  $("account").textContent=name?"Connected: "+name:"Not connected";
+  $("connectBtn").style.display=name?"none":"inline-block";
+  $("logoutBtn").style.display=name?"inline-block":"none";
+  $("connectText").textContent=name?
+    "Your Instagram account is connected.":
+    "Connect your Instagram account to search public hashtag media.";
 }
-document.getElementById('searchForm').addEventListener('submit',e=>{e.preventDefault();setTag(input.value);});
-document.querySelectorAll('[data-tag]').forEach(btn=>btn.addEventListener('click',()=>setTag(btn.dataset.tag)));
-document.getElementById('copyTag').addEventListener('click',async()=>{
-  try{await navigator.clipboard.writeText('#'+current);status.textContent='Copied #'+current+' to clipboard.';}
-  catch(e){status.textContent='Your hashtag is #'+current+'. Select and copy it from the search box.';}
+
+async function checkAccount(){
+  if(!session){showAccount("");return;}
+  try{
+    const r=await fetch(API+"/api/me",{
+      headers:{Authorization:"Bearer "+session}
+    });
+    const data=await r.json();
+    if(!r.ok||!data.connected)throw new Error(data.error||"Session expired");
+    showAccount(data.username||"Instagram");
+    message("Instagram connected. Search a hashtag.");
+  }catch(e){
+    localStorage.removeItem("rf_session");
+    session="";
+    showAccount("");
+    message("Please connect your Instagram account again.");
+  }
+}
+
+async function finishLogin(){
+  const params=new URLSearchParams(location.search);
+  const code=params.get("rf_code");
+  if(!code)return;
+  message("Completing Instagram connection...");
+  try{
+    const r=await fetch(API+"/auth/session",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({code})
+    });
+    const data=await r.json();
+    if(!r.ok||!data.session)throw new Error(data.error||"Connection failed");
+    session=data.session;
+    localStorage.setItem("rf_session",session);
+    history.replaceState({},document.title,location.pathname);
+    await checkAccount();
+  }catch(e){
+    message("Connection error: "+e.message);
+  }
+}
+
+$("connectBtn").onclick=()=>{
+  window.location.href=API+"/auth/login";
+};
+
+$("logoutBtn").onclick=async()=>{
+  try{
+    await fetch(API+"/api/logout",{
+      method:"POST",
+      headers:{Authorization:"Bearer "+session}
+    });
+  }catch(e){}
+  localStorage.removeItem("rf_session");
+  session="";
+  $("results").innerHTML="";
+  showAccount("");
+  message("Instagram disconnected.");
+};
+
+function escapeHTML(value){
+  return String(value||"").replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function renderPosts(posts){
+  $("results").innerHTML="";
+  if(!Array.isArray(posts)||!posts.length){
+    $("results").textContent="No public posts were returned for this hashtag.";
+    return;
+  }
+  posts.forEach(post=>{
+    const card=document.createElement("article");
+    card.className="post";
+    let media="";
+    if(post.media_type==="VIDEO"&&post.media_url){
+      media='<video controls playsinline src="'+escapeHTML(post.media_url)+'"></video>';
+    }else if(post.media_url){
+      media='<img loading="lazy" src="'+escapeHTML(post.media_url)+'" alt="Instagram post">';
+    }
+    card.innerHTML=media+
+      '<div class="info"><b>@'+escapeHTML(post.username||"Instagram user")+'</b>'+
+      '<p>'+escapeHTML(post.caption||"No caption")+'</p>'+
+      '<small>'+escapeHTML(post.timestamp||"")+'</small><br><br>'+
+      (post.permalink?'<a href="'+escapeHTML(post.permalink)+'" target="_blank" rel="noopener">View on Instagram ↗</a>':"")+
+      '</div>';
+    $("results").appendChild(card);
+  });
+}
+
+async function searchHashtag(){
+  const tag=$("tag").value.trim().replace(/^#+/,"").replace(/\s/g,"");
+  if(!tag){message("Please enter a hashtag.");return;}
+  if(!session){message("First connect your Instagram account.");return;}
+  $("searchBtn").disabled=true;
+  $("results").innerHTML="";
+  $("heading").textContent="Results for #"+tag;
+  message("Searching Instagram...");
+  try{
+    const r=await fetch(API+"/api/hashtag?tag="+encodeURIComponent(tag),{
+      headers:{Authorization:"Bearer "+session}
+    });
+    const data=await r.json();
+    if(!r.ok)throw new Error(data.error||"Search failed");
+    renderPosts(data.posts);
+    message("Search completed for #"+tag);
+  }catch(e){
+    message("Error: "+e.message);
+  }finally{
+    $("searchBtn").disabled=false;
+  }
+}
+
+$("searchBtn").onclick=searchHashtag;
+$("tag").addEventListener("keydown",e=>{
+  if(e.key==="Enter")searchHashtag();
 });
-setTag('fashion');
+
+finishLogin().then(checkAccount);
 </script>
 </body>
 </html>
