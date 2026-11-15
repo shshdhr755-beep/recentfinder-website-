@@ -10,23 +10,28 @@ body{margin:0;background:#0d0e12;color:#f5f6fa;font-family:Arial,sans-serif}
 main{max-width:950px;margin:auto;padding:24px 16px}
 header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #292d39;padding:15px 0}
 .logo{font-size:22px;font-weight:bold;color:#c5f36b}
-button{border:0;border-radius:10px;padding:12px 17px;background:#c5f36b;color:#111;font-weight:bold;cursor:pointer}
-button:disabled{opacity:.5}
-.hero{text-align:center;padding:55px 0 25px}
+button{border:0;border-radius:10px;padding:12px 17px;background:#c5f36b;color:#111;font-weight:bold;cursor:pointer;margin:4px}
+button:disabled{opacity:.5;cursor:not-allowed}
+input{border-radius:9px;border:1px solid #444;background:#101219;color:white;padding:12px;font-size:15px;width:100%;margin:7px 0}
+.hero{text-align:center;padding:45px 0 20px}
 h1{font-size:clamp(36px,7vw,58px);margin:10px 0}
 h1 span{color:#c5f36b}
 p{color:#aeb3c0;line-height:1.6}
 .search{display:flex;gap:8px;background:white;padding:7px;border-radius:13px;max-width:620px;margin:25px auto}
-.search input{flex:1;min-width:0;border:0;outline:0;padding:10px;color:#111;font-size:16px}
+.search input{flex:1;min-width:0;border:0;outline:0;padding:10px;color:#111;margin:0}
 #status{text-align:center;color:#c5f36b;min-height:25px;margin:15px}
 #account{font-size:13px;color:#c5f36b}
+.panel{background:#181a22;border:1px solid #292d39;border-radius:15px;padding:20px;text-align:center;margin:22px 0}
 #results{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px;margin-top:20px}
 .post{background:#181a22;border:1px solid #292d39;border-radius:13px;overflow:hidden}
 .post img,.post video{width:100%;max-height:330px;object-fit:cover;background:#080808}
 .post .info{padding:13px}
 .post a{color:#c5f36b;text-decoration:none}
 .post small{color:#aeb3c0}
-#connect{background:#181a22;border:1px solid #292d39;border-radius:15px;padding:20px;text-align:center;margin:25px 0}
+.admin-item{background:#101219;border:1px solid #333;padding:13px;border-radius:10px;margin:12px 0;text-align:left;overflow-wrap:anywhere}
+.secondary{background:#333;color:white}
+.danger{background:#a83232;color:white}
+.hidden{display:none!important}
 footer{text-align:center;color:#858b99;padding:35px 0;font-size:12px}
 @media(max-width:500px){.search{gap:3px}.search button{padding:10px}}
 </style>
@@ -35,169 +40,329 @@ footer{text-align:center;color:#858b99;padding:35px 0;font-size:12px}
 <main>
 <header>
   <div class="logo">◎ RecentFinder</div>
-  <div id="account">Not connected</div>
+  <div id="account">Checking access...</div>
 </header>
 
 <section class="hero">
   <p>INSTAGRAM HASHTAG DISCOVERY</p>
   <h1>Find what's <span>trending.</span></h1>
-  <p>Connect your Instagram Creator or Business account and search hashtags.</p>
+  <p>Discover Instagram hashtag posts with RecentFinder.</p>
+</section>
+
+<section id="accessPanel" class="panel">
+  <h2>RecentFinder Access</h2>
+  <p id="accessText">Checking your access status...</p>
+  <button id="requestBtn">Request Access</button>
+  <button id="checkBtn" class="secondary">Check Status</button>
+</section>
+
+<section id="connect" class="panel hidden">
+  <h2>Instagram Connection</h2>
+  <p id="connectText">Your access is approved.</p>
+  <button id="connectBtn">Connect Instagram</button>
+  <button id="logoutBtn" class="secondary hidden">Disconnect</button>
+</section>
+
+<section id="searchSection" class="hidden">
   <div class="search">
     <input id="tag" placeholder="Enter hashtag e.g. fashion">
     <button id="searchBtn">Search</button>
   </div>
-  <div id="status">Connect your Instagram account to get started.</div>
-</section>
-
-<section id="connect">
-  <h2>Instagram connection</h2>
-  <p id="connectText">Connect your Instagram account to search public hashtag media.</p>
-  <button id="connectBtn">Connect Instagram</button>
-  <button id="logoutBtn" style="display:none;background:#333;color:white">Disconnect</button>
-</section>
-
-<section>
-  <h2 id="heading">Search results</h2>
+  <div id="status"></div>
+  <h2 id="heading">Search Results</h2>
   <div id="results"></div>
 </section>
 
-<footer>RecentFinder · Independent discovery tool · Not affiliated with Meta</footer>
+<section id="adminPanel" class="panel hidden">
+  <h2>RecentFinder Admin Panel</h2>
+  <p>Enter your ADMIN_KEY to manage access requests.</p>
+  <input id="adminKey" type="password" placeholder="Admin key">
+  <button id="loadRequestsBtn">Load Requests</button>
+  <button id="adminLogoutBtn" class="secondary">Clear Admin Key</button>
+  <div id="adminStatus"></div>
+  <div id="requestsList"></div>
+</section>
+
+<footer>
+  RecentFinder · Independent discovery tool
+  <p><a href="?admin=1" style="color:#858b99">Admin</a></p>
+</footer>
 </main>
 
 <script>
-const API="https://recentfinder-api.shshdhr755.workers.dev";
-const $=id=>document.getElementById(id);
-let session=localStorage.getItem("rf_session")||"";
+const API = "https://recentfinder-api.shshdhr755.workers.dev";
 
-function message(text){$("status").textContent=text;}
+const $ = id => document.getElementById(id);
 
-function showAccount(name){
-  $("account").textContent=name?"Connected: "+name:"Not connected";
-  $("connectBtn").style.display=name?"none":"inline-block";
-  $("logoutBtn").style.display=name?"inline-block":"none";
-  $("connectText").textContent=name?
-    "Your Instagram account is connected.":
-    "Connect your Instagram account to search public hashtag media.";
+function getClientId(){
+  let id = localStorage.getItem("rf_client_id");
+  if(!id){
+    const bytes = new Uint8Array(32);
+    crypto.getRandomValues(bytes);
+    id = Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+    localStorage.setItem("rf_client_id",id);
+  }
+  return id;
 }
 
-async function checkAccount(){
-  if(!session){showAccount("");return;}
+const clientId = getClientId();
+let approved = false;
+let session = localStorage.getItem("rf_session") || "";
+const isAdminPage = new URLSearchParams(location.search).get("admin")==="1";
+
+async function api(path, options={}){
+  const headers = {"Content-Type":"application/json",...(options.headers||{})};
+  const response = await fetch(API+path,{...options,headers});
+  const data = await response.json().catch(()=>({}));
+  if(!response.ok) throw new Error(data.error || data.message || "Request failed");
+  return data;
+}
+
+function showStatus(message){
+  $("status").textContent = message;
+}
+
+function setAccess(status,message){
+  approved = status==="approved";
+  $("accessText").textContent = message;
+  $("accessPanel").classList.toggle("hidden",approved);
+  $("connect").classList.toggle("hidden",!approved);
+  $("searchSection").classList.toggle("hidden",!approved);
+  $("account").textContent = approved ? "Access approved" : status;
+  $("requestBtn").classList.toggle("hidden",status==="pending" || status==="blocked");
+}
+
+async function checkAccess(){
   try{
-    const r=await fetch(API+"/api/me",{
-      headers:{Authorization:"Bearer "+session}
-    });
-    const data=await r.json();
-    if(!r.ok||!data.connected)throw new Error(data.error||"Session expired");
-    showAccount(data.username||"Instagram");
-    message("Instagram connected. Search a hashtag.");
-  }catch(e){
-    localStorage.removeItem("rf_session");
-    session="";
-    showAccount("");
-    message("Please connect your Instagram account again.");
+    const data = await api("/api/access/status?clientId="+encodeURIComponent(clientId));
+    const status = String(data.status || "not_requested").toLowerCase();
+
+    if(status==="approved"){
+      setAccess("approved","Your access is approved. You can connect Instagram.");
+      await checkAccount();
+    }else if(status==="pending"){
+      setAccess("pending","Your request is pending. Please wait for admin approval.");
+    }else if(status==="rejected"){
+      setAccess("rejected","Your request was not approved. You may request access again.");
+    }else if(status==="blocked"){
+      setAccess("blocked","Your access has been blocked.");
+    }else{
+      setAccess("not_requested","Request access to use RecentFinder.");
+    }
+  }catch(error){
+    $("accessText").textContent="Could not check access. Please try again.";
+    $("account").textContent="Connection error";
   }
 }
 
-async function finishLogin(){
-  const params=new URLSearchParams(location.search);
-  const code=params.get("rf_code");
-  if(!code)return;
-  message("Completing Instagram connection...");
+async function requestAccess(){
+  $("requestBtn").disabled=true;
+  $("accessText").textContent="Sending your access request...";
   try{
-    const r=await fetch(API+"/auth/session",{
+    const data = await api("/api/access/request",{
       method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body:JSON.stringify({code})
+      body:JSON.stringify({clientId})
     });
-    const data=await r.json();
-    if(!r.ok||!data.session)throw new Error(data.error||"Connection failed");
-    session=data.session;
-    localStorage.setItem("rf_session",session);
-    history.replaceState({},document.title,location.pathname);
-    await checkAccount();
-  }catch(e){
-    message("Connection error: "+e.message);
+    await checkAccess();
+    if(data.emailSent===false){
+      $("accessText").textContent="Request saved, but email notification could not be sent. Admin can still review it.";
+    }
+  }catch(error){
+    $("accessText").textContent="Request failed: "+error.message;
+  }finally{
+    $("requestBtn").disabled=false;
+  }
+}
+
+async function checkAccount(){
+  if(!approved || !session) return;
+  try{
+    const data = await api("/api/me?session="+encodeURIComponent(session));
+    $("connectText").textContent=data.username
+      ? "Connected Instagram: @"+data.username
+      : "Your access is approved. Connect Instagram.";
+    $("logoutBtn").classList.remove("hidden");
+  }catch(error){
+    localStorage.removeItem("rf_session");
+    session="";
+    $("connectText").textContent="Connect your Instagram account to continue.";
+    $("logoutBtn").classList.add("hidden");
   }
 }
 
 $("connectBtn").onclick=()=>{
-  window.location.href=API+"/auth/login";
+  if(!approved) return;
+  location.href=API+"/auth/login?clientId="+encodeURIComponent(clientId);
 };
+
+$("requestBtn").onclick=requestAccess;
+$("checkBtn").onclick=checkAccess;
 
 $("logoutBtn").onclick=async()=>{
   try{
-    await fetch(API+"/api/logout",{
-      method:"POST",
-      headers:{Authorization:"Bearer "+session}
-    });
+    if(session) await api("/api/logout",{method:"POST",body:JSON.stringify({session})});
   }catch(e){}
   localStorage.removeItem("rf_session");
   session="";
-  $("results").innerHTML="";
-  showAccount("");
-  message("Instagram disconnected.");
+  $("connectText").textContent="Instagram disconnected.";
+  $("logoutBtn").classList.add("hidden");
 };
 
-function escapeHTML(value){
-  return String(value||"").replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
+async function finishLogin(){
+  const params = new URLSearchParams(location.search);
+  const code = params.get("code");
+  if(!code) return;
 
-function renderPosts(posts){
-  $("results").innerHTML="";
-  if(!Array.isArray(posts)||!posts.length){
-    $("results").textContent="No public posts were returned for this hashtag.";
-    return;
-  }
-  posts.forEach(post=>{
-    const card=document.createElement("article");
-    card.className="post";
-    let media="";
-    if(post.media_type==="VIDEO"&&post.media_url){
-      media='<video controls playsinline src="'+escapeHTML(post.media_url)+'"></video>';
-    }else if(post.media_url){
-      media='<img loading="lazy" src="'+escapeHTML(post.media_url)+'" alt="Instagram post">';
+  try{
+    const data = await api("/auth/session?code="+encodeURIComponent(code));
+    if(data.session){
+      session=data.session;
+      localStorage.setItem("rf_session",session);
     }
-    card.innerHTML=media+
-      '<div class="info"><b>@'+escapeHTML(post.username||"Instagram user")+'</b>'+
-      '<p>'+escapeHTML(post.caption||"No caption")+'</p>'+
-      '<small>'+escapeHTML(post.timestamp||"")+'</small><br><br>'+
-      (post.permalink?'<a href="'+escapeHTML(post.permalink)+'" target="_blank" rel="noopener">View on Instagram ↗</a>':"")+
-      '</div>';
-    $("results").appendChild(card);
-  });
+    history.replaceState({},document.title,location.pathname);
+    await checkAccess();
+    await checkAccount();
+  }catch(error){
+    showStatus("Instagram connection failed: "+error.message);
+  }
 }
 
 async function searchHashtag(){
-  const tag=$("tag").value.trim().replace(/^#+/,"").replace(/\s/g,"");
-  if(!tag){message("Please enter a hashtag.");return;}
-  if(!session){message("First connect your Instagram account.");return;}
+  if(!approved || !session){
+    showStatus("Please connect Instagram first.");
+    return;
+  }
+  let tag=$("tag").value.trim().replace(/^#/,"");
+  if(!tag){
+    showStatus("Please enter a hashtag.");
+    return;
+  }
+
   $("searchBtn").disabled=true;
   $("results").innerHTML="";
-  $("heading").textContent="Results for #"+tag;
-  message("Searching Instagram...");
+  showStatus("Searching...");
+
   try{
-    const r=await fetch(API+"/api/hashtag?tag="+encodeURIComponent(tag),{
-      headers:{Authorization:"Bearer "+session}
+    const data=await api("/api/hashtag?tag="+encodeURIComponent(tag)+"&session="+encodeURIComponent(session));
+    const posts=data.posts || data.data || [];
+    showStatus(posts.length+" posts found");
+
+    posts.forEach(post=>{
+      const card=document.createElement("div");
+      card.className="post";
+      const media=post.media_url || post.thumbnail_url || "";
+      const caption=post.caption || "";
+      const permalink=post.permalink || "#";
+      let mediaHTML="";
+
+      if(media){
+        if(post.media_type==="VIDEO"){
+          mediaHTML='<video controls playsinline src="'+escapeHTML(media)+'"></video>';
+        }else{
+          mediaHTML='<img loading="lazy" src="'+escapeHTML(media)+'" alt="Instagram post">';
+        }
+      }
+
+      card.innerHTML=mediaHTML+
+        '<div class="info"><p></p><small></small><br><a target="_blank" rel="noopener" href="'+escapeHTML(permalink)+'">View on Instagram</a></div>';
+      card.querySelector(".info p").textContent=caption;
+      card.querySelector("small").textContent=post.timestamp || "";
+      $("results").appendChild(card);
     });
-    const data=await r.json();
-    if(!r.ok)throw new Error(data.error||"Search failed");
-    renderPosts(data.posts);
-    message("Search completed for #"+tag);
-  }catch(e){
-    message("Error: "+e.message);
+  }catch(error){
+    showStatus("Search failed: "+error.message);
   }finally{
     $("searchBtn").disabled=false;
   }
 }
 
+function escapeHTML(value){
+  return String(value).replace(/[&<>"']/g,c=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[c]);
+}
+
 $("searchBtn").onclick=searchHashtag;
 $("tag").addEventListener("keydown",e=>{
-  if(e.key==="Enter")searchHashtag();
+  if(e.key==="Enter") searchHashtag();
 });
 
-finishLogin().then(checkAccount);
+async function loadRequests(){
+  const key=$("adminKey").value.trim();
+  if(!key){
+    $("adminStatus").textContent="Enter your admin key.";
+    return;
+  }
+
+  $("adminStatus").textContent="Loading requests...";
+  $("requestsList").innerHTML="";
+
+  try{
+    const data=await api("/admin/access/list",{
+      headers:{"Authorization":"Bearer "+key}
+    });
+    const requests=data.requests || data.items || [];
+
+    $("adminStatus").textContent=requests.length+" requests found.";
+
+    requests.forEach(item=>{
+      const id=item.clientId || item.id || "";
+      const status=item.status || "unknown";
+      const box=document.createElement("div");
+      box.className="admin-item";
+      const title=document.createElement("strong");
+      title.textContent="Status: "+status;
+      const detail=document.createElement("p");
+      detail.textContent="Browser ID: "+id;
+      box.append(title,detail);
+
+      ["approve","reject","block","unblock"].forEach(action=>{
+        const btn=document.createElement("button");
+        btn.textContent=action.charAt(0).toUpperCase()+action.slice(1);
+        if(action==="reject" || action==="block") btn.className="danger";
+        if(action==="unblock") btn.className="secondary";
+        btn.onclick=()=>decideAccess(id,action,key);
+        box.appendChild(btn);
+      });
+      $("requestsList").appendChild(box);
+    });
+  }catch(error){
+    $("adminStatus").textContent="Admin error: "+error.message;
+  }
+}
+
+async function decideAccess(id,action,key){
+  if(!id) return;
+  if(!confirm("Confirm "+action+" for this visitor?")) return;
+
+  try{
+    await api("/admin/access/decision",{
+      method:"POST",
+      headers:{"Authorization":"Bearer "+key},
+      body:JSON.stringify({clientId:id,action})
+    });
+    $("adminStatus").textContent="Decision saved.";
+    await loadRequests();
+  }catch(error){
+    $("adminStatus").textContent="Could not save decision: "+error.message;
+  }
+}
+
+$("loadRequestsBtn").onclick=loadRequests;
+$("adminLogoutBtn").onclick=()=>{
+  $("adminKey").value="";
+  $("requestsList").innerHTML="";
+  $("adminStatus").textContent="Admin key cleared.";
+};
+
+if(isAdminPage){
+  $("adminPanel").classList.remove("hidden");
+  $("accessPanel").classList.add("hidden");
+  $("connect").classList.add("hidden");
+  $("searchSection").classList.add("hidden");
+}else{
+  finishLogin().then(checkAccess);
+}
 </script>
 </body>
 </html>
