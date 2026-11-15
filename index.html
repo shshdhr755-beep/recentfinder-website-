@@ -2,92 +2,144 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RecentFinder</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RecentFinder — Instagram Hashtag Discovery</title>
 <style>
+:root {
+  color-scheme: dark;
+  --bg:#080b12;
+  --panel:#111827;
+  --panel2:#172033;
+  --text:#f4f7ff;
+  --muted:#9aa8bd;
+  --accent:#8b5cf6;
+  --accent2:#6366f1;
+  --border:#263248;
+  --green:#22c55e;
+  --red:#ef4444;
+}
 *{box-sizing:border-box}
-body{margin:0;background:#0d0e12;color:#f5f6fa;font-family:Arial,sans-serif}
-main{max-width:950px;margin:auto;padding:24px 16px}
-header{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #292d39;padding:15px 0}
-.logo{font-size:22px;font-weight:bold;color:#c5f36b}
-button{border:0;border-radius:10px;padding:12px 17px;background:#c5f36b;color:#111;font-weight:bold;cursor:pointer;margin:4px}
+body{
+  margin:0;
+  background:radial-gradient(circle at top,#18213b 0,#080b12 48%);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+  min-height:100vh;
+}
+.container{width:min(1050px,92%);margin:auto;padding:28px 0 60px}
+header{text-align:center;padding:24px 0 30px}
+.logo{font-size:34px;font-weight:800;letter-spacing:-1px}
+.logo span{color:#a78bfa}
+.subtitle{color:var(--muted);margin-top:9px}
+.panel{
+  background:rgba(17,24,39,.94);
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:22px;
+  margin:16px 0;
+  box-shadow:0 12px 35px rgba(0,0,0,.18);
+}
+h2{font-size:20px;margin:0 0 12px}
+p{color:var(--muted);line-height:1.55}
+button{
+  border:0;border-radius:10px;padding:12px 17px;
+  color:white;font-weight:700;cursor:pointer;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
 button:disabled{opacity:.5;cursor:not-allowed}
-input{border-radius:9px;border:1px solid #444;background:#101219;color:white;padding:12px;font-size:15px;width:100%;margin:7px 0}
-.hero{text-align:center;padding:45px 0 20px}
-h1{font-size:clamp(36px,7vw,58px);margin:10px 0}
-h1 span{color:#c5f36b}
-p{color:#aeb3c0;line-height:1.6}
-.search{display:flex;gap:8px;background:white;padding:7px;border-radius:13px;max-width:620px;margin:25px auto}
-.search input{flex:1;min-width:0;border:0;outline:0;padding:10px;color:#111;margin:0}
-#status{text-align:center;color:#c5f36b;min-height:25px;margin:15px}
-#account{font-size:13px;color:#c5f36b}
-.panel{background:#181a22;border:1px solid #292d39;border-radius:15px;padding:20px;text-align:center;margin:22px 0}
-#results{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:15px;margin-top:20px}
-.post{background:#181a22;border:1px solid #292d39;border-radius:13px;overflow:hidden}
-.post img,.post video{width:100%;max-height:330px;object-fit:cover;background:#080808}
-.post .info{padding:13px}
-.post a{color:#c5f36b;text-decoration:none}
-.post small{color:#aeb3c0}
-.admin-item{background:#101219;border:1px solid #333;padding:13px;border-radius:10px;margin:12px 0;text-align:left;overflow-wrap:anywhere}
-.secondary{background:#333;color:white}
-.danger{background:#a83232;color:white}
+button.secondary{background:#263248}
+button.danger{background:#991b1b}
+input{
+  width:100%;padding:13px 14px;border-radius:10px;
+  border:1px solid var(--border);background:#0b1220;
+  color:white;font-size:15px;margin:8px 0 12px;
+  outline:none;
+}
+input:focus{border-color:var(--accent)}
+.row{display:flex;gap:10px;flex-wrap:wrap}
+.row input{flex:1;min-width:190px}
+.status{font-size:14px;color:var(--muted);margin-top:12px}
+.success{color:var(--green)}
+.error{color:#f87171}
 .hidden{display:none!important}
-footer{text-align:center;color:#858b99;padding:35px 0;font-size:12px}
-@media(max-width:500px){.search{gap:3px}.search button{padding:10px}}
+.results{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));
+  gap:14px;margin-top:18px;
+}
+.post{
+  background:#0b1220;border:1px solid var(--border);
+  border-radius:14px;overflow:hidden;
+}
+.post img{width:100%;height:230px;object-fit:cover;display:block}
+.post-content{padding:13px}
+.caption{font-size:14px;line-height:1.5;color:#dbe4f5;overflow-wrap:anywhere}
+.post a{color:#a78bfa;text-decoration:none;font-size:13px}
+.request{
+  background:#0b1220;border:1px solid var(--border);
+  border-radius:12px;padding:14px;margin:10px 0;
+}
+.request small{color:var(--muted);display:block;margin:7px 0}
+.request button{margin:5px 5px 0 0;padding:9px 12px;font-size:12px}
+footer{text-align:center;color:#64748b;font-size:12px;padding-top:25px}
+@media(max-width:600px){
+  .container{width:94%;padding-top:12px}
+  .panel{padding:17px}
+  .logo{font-size:29px}
+  .row button{width:100%}
+}
 </style>
 </head>
 <body>
-<main>
+<div class="container">
+
 <header>
-  <div class="logo">◎ RecentFinder</div>
-  <div id="account">Checking access...</div>
+  <div class="logo">Recent<span>Finder</span></div>
+  <div class="subtitle">Discover Instagram hashtag content</div>
 </header>
 
-<section class="hero">
-  <p>INSTAGRAM HASHTAG DISCOVERY</p>
-  <h1>Find what's <span>trending.</span></h1>
-  <p>Discover Instagram hashtag posts with RecentFinder.</p>
-</section>
-
 <section id="accessPanel" class="panel">
-  <h2>RecentFinder Access</h2>
-  <p id="accessText">Checking your access status...</p>
-  <button id="requestBtn">Request Access</button>
-  <button id="checkBtn" class="secondary">Check Status</button>
+  <h2>Request Access</h2>
+  <p>Request access to use RecentFinder. The site owner will review your request.</p>
+  <div class="row">
+    <button id="requestBtn">Request Access</button>
+    <button id="statusBtn" class="secondary">Check Status</button>
+  </div>
+  <div id="accessStatus" class="status"></div>
 </section>
 
-<section id="connect" class="panel hidden">
-  <h2>Instagram Connection</h2>
-  <p id="connectText">Your access is approved.</p>
+<section id="connectPanel" class="panel hidden">
+  <h2>Connect Instagram</h2>
+  <p>Your access is approved. Connect your Instagram Professional account to continue.</p>
   <button id="connectBtn">Connect Instagram</button>
-  <button id="logoutBtn" class="secondary hidden">Disconnect</button>
+  <div id="accountStatus" class="status"></div>
+  <button id="logoutBtn" class="secondary hidden">Disconnect Instagram</button>
 </section>
 
-<section id="searchSection" class="hidden">
-  <div class="search">
-    <input id="tag" placeholder="Enter hashtag e.g. fashion">
+<section id="searchSection" class="panel hidden">
+  <h2>Instagram Hashtag Search</h2>
+  <p>Search for a hashtag and explore recent Instagram posts.</p>
+  <div class="row">
+    <input id="hashtagInput" placeholder="Enter hashtag, e.g. fashion" autocomplete="off">
     <button id="searchBtn">Search</button>
   </div>
-  <div id="status"></div>
-  <h2 id="heading">Search Results</h2>
-  <div id="results"></div>
+  <div id="searchStatus" class="status"></div>
+  <div id="results" class="results"></div>
 </section>
 
 <section id="adminPanel" class="panel hidden">
-  <h2>RecentFinder Admin Panel</h2>
-  <p>Enter your ADMIN_KEY to manage access requests.</p>
-  <input id="adminKey" type="password" placeholder="Admin key">
-  <button id="loadRequestsBtn">Load Requests</button>
-  <button id="adminLogoutBtn" class="secondary">Clear Admin Key</button>
-  <div id="adminStatus"></div>
+  <h2>Admin Panel</h2>
+  <p>Manage RecentFinder access requests.</p>
+  <input id="adminKey" type="password" placeholder="Enter Admin Key">
+  <div class="row">
+    <button id="loadRequestsBtn">Load Requests</button>
+    <button id="clearAdminBtn" class="secondary">Clear Admin Key</button>
+  </div>
+  <div id="adminStatus" class="status"></div>
   <div id="requestsList"></div>
 </section>
 
-<footer>
-  RecentFinder · Independent discovery tool
-  <p><a href="?admin=1" style="color:#858b99">Admin</a></p>
-</footer>
-</main>
+<footer>RecentFinder · Instagram hashtag discovery</footer>
+</div>
 
 <script>
 const API = "https://recentfinder-api.shshdhr755.workers.dev";
@@ -99,266 +151,341 @@ function getClientId(){
   if(!id){
     const bytes = new Uint8Array(32);
     crypto.getRandomValues(bytes);
-    id = Array.from(bytes,b=>b.toString(16).padStart(2,"0")).join("");
+    id = Array.from(bytes).map(b=>b.toString(16).padStart(2,"0")).join("");
     localStorage.setItem("rf_client_id",id);
   }
   return id;
 }
 
 const clientId = getClientId();
-let approved = false;
-let session = localStorage.getItem("rf_session") || "";
-const isAdminPage = new URLSearchParams(location.search).get("admin")==="1";
+
+function getSession(){
+  return localStorage.getItem("rf_session") || "";
+}
 
 async function api(path, options={}){
-  const headers = {"Content-Type":"application/json",...(options.headers||{})};
-  const response = await fetch(API+path,{...options,headers});
-  const data = await response.json().catch(()=>({}));
-  if(!response.ok) throw new Error(data.error || data.message || "Request failed");
+  const headers = {
+    ...(options.body ? {"Content-Type":"application/json"} : {}),
+    ...(options.headers || {})
+  };
+
+  const response = await fetch(API + path,{
+    ...options,
+    headers
+  });
+
+  let data;
+  try{ data = await response.json(); }
+  catch{ data = {}; }
+
+  if(!response.ok){
+    throw new Error(data.error || data.message || "Request failed");
+  }
   return data;
 }
 
-function showStatus(message){
-  $("status").textContent = message;
+function showStatus(id,message,type=""){
+  const el = $(id);
+  el.textContent = message;
+  el.className = "status " + type;
 }
 
-function setAccess(status,message){
-  approved = status==="approved";
-  $("accessText").textContent = message;
-  $("accessPanel").classList.toggle("hidden",approved);
-  $("connect").classList.toggle("hidden",!approved);
-  $("searchSection").classList.toggle("hidden",!approved);
-  $("account").textContent = approved ? "Access approved" : status;
-  $("requestBtn").classList.toggle("hidden",status==="pending" || status==="blocked");
+function setAccess(status){
+  if(status === "approved"){
+    $("accessPanel").classList.add("hidden");
+    $("connectPanel").classList.remove("hidden");
+    $("searchSection").classList.remove("hidden");
+    checkAccount();
+  }else{
+    $("accessPanel").classList.remove("hidden");
+    $("connectPanel").classList.add("hidden");
+    $("searchSection").classList.add("hidden");
+
+    if(status === "pending"){
+      showStatus("accessStatus","Your request is pending approval.");
+    }else if(status === "rejected" || status === "blocked"){
+      showStatus("accessStatus","Your access is not approved.", "error");
+    }else{
+      showStatus("accessStatus","You have not requested access yet.");
+    }
+  }
 }
 
 async function checkAccess(){
   try{
     const data = await api("/api/access/status?clientId="+encodeURIComponent(clientId));
-    const status = String(data.status || "not_requested").toLowerCase();
-
-    if(status==="approved"){
-      setAccess("approved","Your access is approved. You can connect Instagram.");
-      await checkAccount();
-    }else if(status==="pending"){
-      setAccess("pending","Your request is pending. Please wait for admin approval.");
-    }else if(status==="rejected"){
-      setAccess("rejected","Your request was not approved. You may request access again.");
-    }else if(status==="blocked"){
-      setAccess("blocked","Your access has been blocked.");
-    }else{
-      setAccess("not_requested","Request access to use RecentFinder.");
-    }
+    setAccess(data.status);
   }catch(error){
-    $("accessText").textContent="Could not check access. Please try again.";
-    $("account").textContent="Connection error";
+    showStatus("accessStatus","Could not check access: "+error.message,"error");
   }
 }
 
 async function requestAccess(){
-  $("requestBtn").disabled=true;
-  $("accessText").textContent="Sending your access request...";
+  $("requestBtn").disabled = true;
+  showStatus("accessStatus","Sending access request...");
   try{
     const data = await api("/api/access/request",{
       method:"POST",
       body:JSON.stringify({clientId})
     });
+    showStatus("accessStatus",data.message || "Your access request has been submitted.","success");
     await checkAccess();
-    if(data.emailSent===false){
-      $("accessText").textContent="Request saved, but email notification could not be sent. Admin can still review it.";
-    }
   }catch(error){
-    $("accessText").textContent="Request failed: "+error.message;
+    showStatus("accessStatus",error.message,"error");
   }finally{
-    $("requestBtn").disabled=false;
+    $("requestBtn").disabled = false;
   }
 }
 
 async function checkAccount(){
-  if(!approved || !session) return;
+  const session = getSession();
+  if(!session){
+    $("accountStatus").textContent = "Instagram is not connected.";
+    $("logoutBtn").classList.add("hidden");
+    return;
+  }
+
   try{
-    const data = await api("/api/me?session="+encodeURIComponent(session));
-    $("connectText").textContent=data.username
-      ? "Connected Instagram: @"+data.username
-      : "Your access is approved. Connect Instagram.";
+    const data = await api("/api/me",{
+      headers:{Authorization:"Bearer "+session}
+    });
+    $("accountStatus").textContent = "Connected: @"+(data.username || "Instagram account");
+    $("accountStatus").className = "status success";
     $("logoutBtn").classList.remove("hidden");
   }catch(error){
     localStorage.removeItem("rf_session");
-    session="";
-    $("connectText").textContent="Connect your Instagram account to continue.";
+    $("accountStatus").textContent = "Please connect Instagram again.";
     $("logoutBtn").classList.add("hidden");
   }
 }
 
-$("connectBtn").onclick=()=>{
-  if(!approved) return;
-  location.href=API+"/auth/login?clientId="+encodeURIComponent(clientId);
-};
-
-$("requestBtn").onclick=requestAccess;
-$("checkBtn").onclick=checkAccess;
-
-$("logoutBtn").onclick=async()=>{
-  try{
-    if(session) await api("/api/logout",{method:"POST",body:JSON.stringify({session})});
-  }catch(e){}
-  localStorage.removeItem("rf_session");
-  session="";
-  $("connectText").textContent="Instagram disconnected.";
-  $("logoutBtn").classList.add("hidden");
-};
-
 async function finishLogin(){
   const params = new URLSearchParams(location.search);
-  const code = params.get("code");
+  const code = params.get("rf_code");
   if(!code) return;
 
+  showStatus("accountStatus","Finishing Instagram connection...");
   try{
-    const data = await api("/auth/session?code="+encodeURIComponent(code));
-    if(data.session){
-      session=data.session;
-      localStorage.setItem("rf_session",session);
-    }
+    const data = await api("/auth/session",{
+      method:"POST",
+      body:JSON.stringify({code})
+    });
+
+    if(!data.session) throw new Error("Session was not returned.");
+
+    localStorage.setItem("rf_session",data.session);
     history.replaceState({},document.title,location.pathname);
-    await checkAccess();
     await checkAccount();
   }catch(error){
-    showStatus("Instagram connection failed: "+error.message);
+    showStatus("accountStatus","Instagram connection failed: "+error.message,"error");
+  }
+}
+
+async function logout(){
+  const session = getSession();
+  try{
+    if(session){
+      await api("/api/logout",{
+        method:"POST",
+        headers:{Authorization:"Bearer "+session}
+      });
+    }
+  }catch(error){
+    console.warn("Logout request:",error.message);
+  }
+
+  localStorage.removeItem("rf_session");
+  $("accountStatus").textContent = "Instagram disconnected.";
+  $("accountStatus").className = "status";
+  $("logoutBtn").classList.add("hidden");
+  $("results").innerHTML = "";
+  showStatus("searchStatus","");
+}
+
+function escapeHTML(value){
+  return String(value ?? "").replace(/[&<>"']/g,char=>({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  })[char]);
+}
+
+function renderPosts(posts){
+  const container = $("results");
+  container.innerHTML = "";
+
+  if(!Array.isArray(posts) || posts.length === 0){
+    container.textContent = "No posts found.";
+    return;
+  }
+
+  for(const post of posts){
+    const card = document.createElement("div");
+    card.className = "post";
+
+    const imageUrl = post.media_url || post.thumbnail_url || "";
+    const caption = post.caption || "";
+    const permalink = post.permalink || "";
+
+    if(imageUrl && /^https:\/\//i.test(imageUrl)){
+      const img = document.createElement("img");
+      img.src = imageUrl;
+      img.alt = "Instagram post";
+      img.loading = "lazy";
+      card.appendChild(img);
+    }
+
+    const content = document.createElement("div");
+    content.className = "post-content";
+
+    const text = document.createElement("div");
+    text.className = "caption";
+    text.textContent = caption || "Instagram post";
+    content.appendChild(text);
+
+    if(permalink && /^https:\/\//i.test(permalink)){
+      const link = document.createElement("a");
+      link.href = permalink;
+      link.target = "_blank";
+      link.rel = "noopener noreferrer";
+      link.textContent = "View on Instagram";
+      content.appendChild(document.createElement("br"));
+      content.appendChild(link);
+    }
+
+    card.appendChild(content);
+    container.appendChild(card);
   }
 }
 
 async function searchHashtag(){
-  if(!approved || !session){
-    showStatus("Please connect Instagram first.");
-    return;
-  }
-  let tag=$("tag").value.trim().replace(/^#/,"");
-  if(!tag){
-    showStatus("Please enter a hashtag.");
+  const session = getSession();
+  if(!session){
+    showStatus("searchStatus","Please connect Instagram first.","error");
     return;
   }
 
-  $("searchBtn").disabled=true;
-  $("results").innerHTML="";
-  showStatus("Searching...");
+  let tag = $("hashtagInput").value.trim().replace(/^#/,"");
+  if(!tag){
+    showStatus("searchStatus","Please enter a hashtag.","error");
+    return;
+  }
+
+  $("searchBtn").disabled = true;
+  $("results").innerHTML = "";
+  showStatus("searchStatus","Searching Instagram...");
 
   try{
-    const data=await api("/api/hashtag?tag="+encodeURIComponent(tag)+"&session="+encodeURIComponent(session));
-    const posts=data.posts || data.data || [];
-    showStatus(posts.length+" posts found");
-
-    posts.forEach(post=>{
-      const card=document.createElement("div");
-      card.className="post";
-      const media=post.media_url || post.thumbnail_url || "";
-      const caption=post.caption || "";
-      const permalink=post.permalink || "#";
-      let mediaHTML="";
-
-      if(media){
-        if(post.media_type==="VIDEO"){
-          mediaHTML='<video controls playsinline src="'+escapeHTML(media)+'"></video>';
-        }else{
-          mediaHTML='<img loading="lazy" src="'+escapeHTML(media)+'" alt="Instagram post">';
-        }
-      }
-
-      card.innerHTML=mediaHTML+
-        '<div class="info"><p></p><small></small><br><a target="_blank" rel="noopener" href="'+escapeHTML(permalink)+'">View on Instagram</a></div>';
-      card.querySelector(".info p").textContent=caption;
-      card.querySelector("small").textContent=post.timestamp || "";
-      $("results").appendChild(card);
+    const data = await api("/api/hashtag?tag="+encodeURIComponent(tag),{
+      headers:{Authorization:"Bearer "+session}
     });
+
+    renderPosts(data.posts || []);
+    showStatus("searchStatus",
+      "Found "+(data.total ?? (data.posts || []).length)+" posts.",
+      "success"
+    );
   }catch(error){
-    showStatus("Search failed: "+error.message);
+    showStatus("searchStatus","Search failed: "+error.message,"error");
   }finally{
-    $("searchBtn").disabled=false;
+    $("searchBtn").disabled = false;
   }
 }
 
-function escapeHTML(value){
-  return String(value).replace(/[&<>"']/g,c=>({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  })[c]);
+function adminHeaders(){
+  const key = $("adminKey").value.trim();
+  if(!key) throw new Error("Please enter Admin Key.");
+  return {Authorization:"Bearer "+key};
 }
-
-$("searchBtn").onclick=searchHashtag;
-$("tag").addEventListener("keydown",e=>{
-  if(e.key==="Enter") searchHashtag();
-});
 
 async function loadRequests(){
-  const key=$("adminKey").value.trim();
-  if(!key){
-    $("adminStatus").textContent="Enter your admin key.";
-    return;
-  }
-
-  $("adminStatus").textContent="Loading requests...";
-  $("requestsList").innerHTML="";
+  $("loadRequestsBtn").disabled = true;
+  showStatus("adminStatus","Loading requests...");
+  $("requestsList").innerHTML = "";
 
   try{
-    const data=await api("/admin/access/list",{
-      headers:{"Authorization":"Bearer "+key}
+    const data = await api("/admin/access/list",{
+      method:"POST",
+      headers:adminHeaders()
     });
-    const requests=data.requests || data.items || [];
 
-    $("adminStatus").textContent=requests.length+" requests found.";
+    const requests = data.requests || [];
+    if(!requests.length){
+      $("requestsList").textContent = "No access requests found.";
+    }else{
+      requests.forEach(item=>{
+        const client = item.clientId || item.id || "";
+        const status = item.status || "pending";
 
-    requests.forEach(item=>{
-      const id=item.clientId || item.id || "";
-      const status=item.status || "unknown";
-      const box=document.createElement("div");
-      box.className="admin-item";
-      const title=document.createElement("strong");
-      title.textContent="Status: "+status;
-      const detail=document.createElement("p");
-      detail.textContent="Browser ID: "+id;
-      box.append(title,detail);
+        const card = document.createElement("div");
+        card.className = "request";
 
-      ["approve","reject","block","unblock"].forEach(action=>{
-        const btn=document.createElement("button");
-        btn.textContent=action.charAt(0).toUpperCase()+action.slice(1);
-        if(action==="reject" || action==="block") btn.className="danger";
-        if(action==="unblock") btn.className="secondary";
-        btn.onclick=()=>decideAccess(id,action,key);
-        box.appendChild(btn);
+        const title = document.createElement("strong");
+        title.textContent = "Visitor: "+client;
+        card.appendChild(title);
+
+        const small = document.createElement("small");
+        small.textContent = "Status: "+status;
+        card.appendChild(small);
+
+        ["approve","reject","block","unblock"].forEach(action=>{
+          const button = document.createElement("button");
+          button.textContent = action.charAt(0).toUpperCase()+action.slice(1);
+          if(action === "block" || action === "reject") button.className = "danger";
+          button.addEventListener("click",()=>decideAccess(client,action));
+          card.appendChild(button);
+        });
+
+        $("requestsList").appendChild(card);
       });
-      $("requestsList").appendChild(box);
-    });
+    }
+    showStatus("adminStatus","Loaded "+requests.length+" request(s).","success");
   }catch(error){
-    $("adminStatus").textContent="Admin error: "+error.message;
+    showStatus("adminStatus",error.message,"error");
+  }finally{
+    $("loadRequestsBtn").disabled = false;
   }
 }
 
-async function decideAccess(id,action,key){
-  if(!id) return;
-  if(!confirm("Confirm "+action+" for this visitor?")) return;
+async function decideAccess(clientId,action){
+  if(!confirm("Are you sure you want to "+action+" this visitor?")) return;
 
   try{
     await api("/admin/access/decision",{
       method:"POST",
-      headers:{"Authorization":"Bearer "+key},
-      body:JSON.stringify({clientId:id,action})
+      headers:adminHeaders(),
+      body:JSON.stringify({clientId,action})
     });
-    $("adminStatus").textContent="Decision saved.";
+    showStatus("adminStatus","Action completed: "+action,"success");
     await loadRequests();
   }catch(error){
-    $("adminStatus").textContent="Could not save decision: "+error.message;
+    showStatus("adminStatus",error.message,"error");
   }
 }
 
-$("loadRequestsBtn").onclick=loadRequests;
-$("adminLogoutBtn").onclick=()=>{
-  $("adminKey").value="";
-  $("requestsList").innerHTML="";
-  $("adminStatus").textContent="Admin key cleared.";
-};
+$("requestBtn").addEventListener("click",requestAccess);
+$("statusBtn").addEventListener("click",checkAccess);
 
-if(isAdminPage){
+$("connectBtn").addEventListener("click",()=>{
+  location.href = API+"/auth/login?clientId="+encodeURIComponent(clientId);
+});
+
+$("logoutBtn").addEventListener("click",logout);
+$("searchBtn").addEventListener("click",searchHashtag);
+$("hashtagInput").addEventListener("keydown",event=>{
+  if(event.key === "Enter") searchHashtag();
+});
+
+$("loadRequestsBtn").addEventListener("click",loadRequests);
+
+$("clearAdminBtn").addEventListener("click",()=>{
+  $("adminKey").value = "";
+  $("requestsList").innerHTML = "";
+  showStatus("adminStatus","Admin key cleared.");
+});
+
+if(new URLSearchParams(location.search).get("admin") === "1"){
   $("adminPanel").classList.remove("hidden");
   $("accessPanel").classList.add("hidden");
-  $("connect").classList.add("hidden");
+  $("connectPanel").classList.add("hidden");
   $("searchSection").classList.add("hidden");
 }else{
   finishLogin().then(checkAccess);
